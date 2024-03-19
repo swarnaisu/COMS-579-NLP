@@ -1,4 +1,4 @@
-llamaindex
+llama-index
 sentence-transformers
 pinecone-client
 PyMuPDF
