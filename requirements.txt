@@ -1,0 +1,7 @@
+llamaindex
+pdfplumber
+pandas
+sentence-transformers
+pinecone-client
+PyMuPDF==1.18.14
+transformers
