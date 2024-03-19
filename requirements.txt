@@ -3,3 +3,4 @@ sentence-transformers
 pinecone-client
 PyMuPDF
 transformers
+torch
