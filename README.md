@@ -16,6 +16,9 @@ pip install -r requirements.txt
 To run the script, run the following command:
 
 ```bash
-python upload.py --pdf_file "LLMs Can be Easily Distracted.pdf"
+python upload.py --pdf_file="LLMs Can be Easily Distracted.pdf"
 
 ```
+ [Demonstration video of Milestone1: ](https://iastate.box.com/s/fi2tj3q2fn9i3wi1yfnzh7btxjc30cn8)
+
+ 
