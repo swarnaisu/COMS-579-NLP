@@ -1,6 +1,6 @@
 llama-index
 sentence-transformers
 pinecone-client
-PyMuPDF
 transformers
 torch
+PyPDF2
