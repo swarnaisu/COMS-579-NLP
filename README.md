@@ -29,5 +29,6 @@ To run the script, run the following command:
 python query.py --question="What is the summary of the paper?"
 
 ```
+ [Demonstration video of Milestone 2 ](https://iastate.box.com/s/m9wl1eg2qltu5j16ijjwvmwy2odibcze)
 
  
