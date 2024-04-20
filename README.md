@@ -1,4 +1,4 @@
-# COMS-579-NLP
+# RAG System
 
 To run the project, please follow the steps included below. You also require API keys from Pinecone and OpenAI to run the project.
 
