@@ -1,6 +1,6 @@
 # COMS-579-NLP
 
-This repository serves as the project repository for the COM S 579: Natural Language Processing course, Spring 2024.
+To run the project, please follow the steps I've included below.
 
 ## Installation
 
