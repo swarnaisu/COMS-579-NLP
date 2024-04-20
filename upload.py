@@ -1,76 +1,65 @@
-import sys
-import os
 import argparse
-from PyPDF2 import PdfReader
+import fitz
+import re
+import pinecone
+import os
+
+from dotenv import load_dotenv, find_dotenv
+from pinecone import Pinecone
 from transformers import AutoTokenizer, AutoModel
 import torch
-from pinecone import Pinecone
+import numpy as np
 
 # Initialize tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
 model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+load_dotenv(find_dotenv())
 
-# Initialize Pinecone
-pc = Pinecone(api_key="8ff82485-278b-402d-b51f-fb33a8ab0aaa")
-index = pc.Index("rag-system-index")
+def text_embedding(chunk):
+    from llama_index.embeddings.openai import OpenAIEmbedding
+    model_embedding = OpenAIEmbedding()
+    vector = model_embedding.get_text_embedding(chunk)
+    return vector
 
-# Placeholder for the actual LlamaIndex embedding function
-def get_embeddings(text_chunk):
-    """
-    Generates an embedding for a text chunk using Hugging Face's transformers.
-    """
-    # Tokenize the text chunk
-    inputs = tokenizer(text_chunk, return_tensors="pt", padding=True, truncation=True, max_length=512)
+#Initialize pinecone
+pc = Pinecone(api_key="e9594329-56b9-4403-81c7-9cd2a0dc8bd0")
+index = pc.Index("llama-integration")
 
-    # Move the tensors to the same device as the model
-    inputs = {name: tensor.to(model.device) for name, tensor in inputs.items()}
+def pdf_reading(pdf_path):
+    doc = fitz.open(pdf_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    return text
 
-    # Generate embeddings
-    with torch.no_grad():
-        outputs = model(**inputs)
+def text_cleaning(text):
+    cleaned_text = re.sub(r'\bPage \d+\b', '', text)  
+    cleaned_text = re.sub(r'\s+', ' ', cleaned_text) 
+    return cleaned_text
 
-    # Pool the outputs into a single mean vector
-    embeddings = outputs.last_hidden_state.mean(dim=1)
+def text_chunking(text, chunk_size=500, overlap=0.25):
+    words = text.split()
+    chunk_step = int(chunk_size * (1 - overlap))  # Calculate step size based on overlap
+    chunks = [' '.join(words[i:i+chunk_size]) for i in range(0, len(words), chunk_step) if i + chunk_size <= len(words)]
+    return chunks
 
-    # Convert to list and return
-    return embeddings.squeeze().tolist()
 
-def read_pdf(file_path):
-    reader = PdfReader(file_path)
-    text_content = []
-    
-    for page in reader.pages:
-        text_content.append(page.extract_text())
-    
-    return text_content
+def upload_index(pdf_path):
+    text = pdf_reading(pdf_path)
+    cleaned_text = text_cleaning(text)
+    chunks = text_chunking(cleaned_text)
+    for i, chunk in enumerate(chunks):
+        embedding = text_embedding(chunk)
+        index.upsert(vectors=[(str(i), embedding, {'text': chunk})])  # Store embedding and text in Pinecone
 
-def upload_pdf(file_path):
-    # Read the PDF file
-    text_chunks = read_pdf(file_path)
-    print(text_chunks)
-
-    embeddings = get_embeddings(text_chunks)
-    print(embeddings)
-
-    # Store the embeddings and their associated text chunks in Pinecone
-    for i, embedding in enumerate(embeddings):
-        # The upsert method adds or updates a vector
-        index.upsert(vectors=[(str(i), embedding)])
-
-    print(f"PDF '{file_path}' has been read, indexed, and stored in Pinecone.")
-
-def load_arguments():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--pdf_file',
-                         help="PDF file to add to the folder")
-    args = parser.parse_args()
-    return args
-
+def query_index(query):
+    query_embedding = text_embedding(query)
+    results = index.query(query_embedding, top_k=5, include_metadata=True)
+    return [(match['metadata']['text'], match['score']) for match in results['matches']]
 if __name__ == "__main__":
-    pdf_file_path = load_arguments().pdf_file
-    print(f"file name: {pdf_file_path}")
-    if not os.path.isfile(pdf_file_path):
-        print(f"File {pdf_file_path} does not exist.")
-        sys.exit(1)
-
-    upload_pdf(pdf_file_path)
+    parser = argparse.ArgumentParser(description="Upload and index a PDF file.")
+    parser.add_argument("--pdf_file", type=str, required=True, help="Path to the PDF file to be uploaded and indexed.")
+    
+    args = parser.parse_args()
+    upload_index(args.pdf_file)
+    print(f"Successfully processed and indexed {args.pdf_file}.")
