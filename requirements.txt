@@ -1,6 +1,6 @@
-llama-index
-sentence-transformers
+llama-index==0.10.18
+pymupdf
 pinecone-client
 transformers
 torch
-PyPDF2
+python-dotenv
