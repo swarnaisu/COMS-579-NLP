@@ -1,10 +1,10 @@
 # COMS-579-NLP
 
-To run the project, please follow the steps I've included below.
+To run the project, please follow the steps included below.
 
 ## Installation
 
-To install dependencies required for this project, run the following command in your terminal or command prompt:
+To install the dependencies required for this project, run the following command in your terminal or command prompt:
 
 ```bash
 pip install -r requirements.txt
