@@ -22,7 +22,7 @@ def text_embedding(chunk):
     return vector
 
 #Initialize pinecone
-pc = Pinecone(api_key="e9594329-56b9-4403-81c7-9cd2a0dc8bd0")
+pc = Pinecone(api_key="Your-Pinecone-API-Key")
 index = pc.Index("llama-integration")
 
 def pdf_reading(pdf_path):
