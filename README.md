@@ -19,7 +19,7 @@ To run the script, run the following command:
 python upload.py --pdf_file="LLMsCanbeEasilyDistracted.pdf"
 
 ```
- [Demonstration video of Milestone1: ](https://iastate.box.com/s/39f4ai2bkplpok6gqmsc26ng0of5do65)
+ [Demonstration video of Milestone 1 ](https://iastate.box.com/s/39f4ai2bkplpok6gqmsc26ng0of5do65)
 
  ## Query
 
