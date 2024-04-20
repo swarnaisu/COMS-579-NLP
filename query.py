@@ -8,10 +8,10 @@ from pinecone import Pinecone
 import openai
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-openai.api_key = "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"
+openai.api_key = "Your-OpenAI-API-Key"
 
 # initializing Pinecone
-pc = Pinecone(api_key="e9594329-56b9-4403-81c7-9cd2a0dc8bd0")
+pc = Pinecone(api_key="Your-Pinecone-API-Key")
 index = pc.Index("llama-integration")
 
 def question_to_embedding(question):
