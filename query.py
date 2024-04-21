@@ -1,28 +1,22 @@
 import argparse
 import os
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import TextNode
 from llama_index.llms.openai import OpenAI
 from pinecone import Pinecone
 import openai
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-openai.api_key = "Your-OpenAI-API-Key"
-
-# initializing Pinecone
-pc = Pinecone(api_key="Your-Pinecone-API-Key")
-index = pc.Index("llama-integration")
+from llama_index.embeddings.openai import OpenAIEmbedding
 
 def question_to_embedding(question):
-    from llama_index.embeddings.openai import OpenAIEmbedding
-    model_embedding = OpenAIEmbedding()
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    model_embedding = OpenAIEmbedding(api_key=openai_api_key)
     vector = model_embedding.get_text_embedding(question)
     return vector
 
-
-def get_answer(question):
+def get_answer(question, index):
     query_vector = question_to_embedding(question)
+
     # including metadata in the results
     query_result = index.query(vector=query_vector, top_k=5, include_metadata=True)
 
@@ -46,12 +40,9 @@ def get_answer(question):
     print("Answer: ")
     print(str(response))
 
-
 def answer_generation(texts):
     context_combining = ' '.join(texts)  # to combine texts into one continuous block
 
-    # ensuring API key is securely configured and loaded
-    load_dotenv(find_dotenv())
     try:
         # sending a completion request to OpenAI API
         response = openai.Completion.create(
@@ -75,8 +66,14 @@ def main():
     parser = argparse.ArgumentParser(description="Query and retrieve answers from Pinecone index.")
     parser.add_argument("--question", type=str, required=False, help="Question to query the indexed data.")
     args = parser.parse_args()
-    get_answer(args.question)
+
+    load_dotenv()
+    pinecone_api_key = os.getenv("PINECONE_API_KEY")
+    pc = Pinecone(api_key=pinecone_api_key)
+    index_name = "llama-integration"
+    index = pc.Index(index_name)
+
+    get_answer(args.question, index)
 
 if __name__ == "__main__":
     main()
-
