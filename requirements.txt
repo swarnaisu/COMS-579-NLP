@@ -2,3 +2,4 @@ llama-index==0.10.18
 pymupdf
 pinecone-client
 python-dotenv
+gradio
