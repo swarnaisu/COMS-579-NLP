@@ -44,12 +44,6 @@ def upload_index(pdf_path, index):
         embedding = text_embedding(chunk)
         index.upsert(vectors=[(str(i), embedding, {'text': chunk})])  # Store embedding and text in Pinecone
 
-# def query_index(query):
-#     query_embedding = text_embedding(query)
-#     results = index.query(query_embedding, top_k=5, include_metadata=True)
-
-#     return [(match['metadata']['text'], match['score']) for match in results['matches']]
-
 def create_index_and_upload_pdf(pdf_file):
     load_dotenv()
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
