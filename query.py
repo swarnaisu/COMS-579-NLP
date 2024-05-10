@@ -37,8 +37,8 @@ def get_answer(question, index):
     # re-ranking
     query_engine = _index.as_query_engine(similarity_top_k=5, llm=llm)
     response = query_engine.query(question)
-    print("Answer: ")
-    print(str(response))
+
+    return str(response)
 
 def answer_generation(texts):
     context_combining = ' '.join(texts)  # to combine texts into one continuous block
@@ -60,20 +60,21 @@ def answer_generation(texts):
         return answer
     except Exception as e:
         return f"An error occurred: {str(e)}"
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Query and retrieve answers from Pinecone index.")
-    parser.add_argument("--question", type=str, required=False, help="Question to query the indexed data.")
-    args = parser.parse_args()
-
+    
+def get_index_and_get_answer(question):
     load_dotenv()
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
     pc = Pinecone(api_key=pinecone_api_key)
     index_name = "llama-integration"
     index = pc.Index(index_name)
 
-    get_answer(args.question, index)
+    return get_answer(question, index)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Query and retrieve answers from Pinecone index.")
+    parser.add_argument("--question", type=str, required=False, help="Question to query the indexed data.")
+    args = parser.parse_args()
+
+    answer = get_index_and_get_answer(args.question)
+    print("Answer: ")
+    print(answer)
