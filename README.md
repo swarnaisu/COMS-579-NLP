@@ -36,7 +36,7 @@ python query.py --question="What is the summary of the paper?"
 To run the script, run the following command:
 
 ```bash
-python gradio.py
+python gradio_ui.py
 
 ```
  [Demonstration video of Milestone 3 ]
