@@ -39,5 +39,5 @@ To run the script, run the following command:
 python gradio_ui.py
 
 ```
- [Demonstration video of Milestone 3 ]
+ [Demonstration video of Milestone 3 ](https://iastate.box.com/s/89rosygs3bo1ckhxuj7cka53faoa5icv)
  
